@@ -4,10 +4,12 @@
 namespace Foundation
 {
 	class DateTime;
+	std::ostream& operator <<(std::ostream& os,const DateTime& datetime);
 }
 class Foundation::DateTime
 {
 public:
+	friend std::ostream& Foundation::operator <<(std::ostream& os, const DateTime& datetime);
 	DateTime(int year,int month,int day,int hour,int minute,int second);
 public:
 	const Foundation::String ToString();
