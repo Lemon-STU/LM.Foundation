@@ -1,20 +1,19 @@
 #include "pch.h"
 #include "LMString.h"
 #include <iostream>
-#include <string>
 using namespace Foundation;
 
-LMString::iterator LMString::begin()
+String::iterator String::begin()
 {
 	return _str; //返回字符串中第一个字符的地址
 }
 
-LMString::iterator LMString::end()
+String::iterator String::end()
 {
 	return _str + _size; //返回字符串中最后一个字符的后一个字符的地址
 }
 
-LMString::LMString(const char* str)
+String::String(const char* str)
 {
 	_size = std::strlen(str); //初始时，字符串大小设置为字符串长度
 	_capacity = _size; //初始时，字符串容量设置为字符串长度
@@ -22,7 +21,7 @@ LMString::LMString(const char* str)
 	strcpy_s(_str, _capacity + 1, str); //将C字符串拷贝到已开好的空间
 }
 
-void LMString::swap(LMString& s)
+void String::swap(String& s)
 {
 	//调用库里的swap
 	std::swap(_str, s._str); //交换两个对象的C字符串
@@ -30,7 +29,7 @@ void LMString::swap(LMString& s)
 	std::swap(_capacity, s._capacity); //交换两个对象的容量
 }
 
-LMString::LMString(LMString&& s)
+String::String(String&& s)
 	:_str(nullptr)
 	, _size(0)
 	, _capacity(0)
@@ -38,37 +37,37 @@ LMString::LMString(LMString&& s)
 	swap(s);
 }
 
-LMString::LMString(const LMString& s)
+String::String(const String& s)
 	:_str(nullptr)
 	, _size(0)
 	, _capacity(0)
 {
-	LMString tmp(s._str); //调用构造函数，构造出一个C字符串为s._str的对象
+	String tmp(s._str); //调用构造函数，构造出一个C字符串为s._str的对象
 	swap(tmp); //交换这两个对象
 }
 
-LMString& LMString::operator=(const LMString& s)
+String& String::operator=(const String& s)
 {
-	LMString tmp(s); //用s拷贝构造出对象tmp
+	String tmp(s); //用s拷贝构造出对象tmp
 	swap(tmp); //交换这两个对象
 	return *this; //返回左值（支持连续赋值）
 }
 
-LMString& LMString::operator=(const LMString&& s)
+String& String::operator=(const String&& s)
 {
-	LMString tmp(s); //用s拷贝构造出对象tmp
+	String tmp(s); //用s拷贝构造出对象tmp
 	swap(tmp); //交换这两个对象
 	return *this; //返回左值（支持连续赋值）
 }
 
-LMString& Foundation::LMString::operator=(const char* s)
+String& Foundation::String::operator=(const char* s)
 {
-	LMString tmp(s); //用s拷贝构造出对象tmp
+	String tmp(s); //用s拷贝构造出对象tmp
 	swap(tmp); //交换这两个对象
 	return *this; //返回左值（支持连续赋值）
 }
 
-LMString::~LMString()
+String::~String()
 {
 	if (_str)
 	{
@@ -79,13 +78,13 @@ LMString::~LMString()
 	_capacity = 0;  //容量置0
 }
 
-char& LMString::operator[](size_t i)
+char& String::operator[](size_t i)
 {
 	//assert(i < _size); //检测下标的合法性
 	return _str[i]; //返回对应字符
 }
 
-void LMString::reserve(size_t n)
+void String::reserve(size_t n)
 {
 	if (n > _capacity) //当n大于对象当前容量时才需执行操作
 	{
@@ -97,7 +96,7 @@ void LMString::reserve(size_t n)
 	}
 }
 
-void LMString::push_back(char ch)
+void String::push_back(char ch)
 {
 	if (_size == _capacity) //判断是否需要增容
 	{
@@ -108,18 +107,18 @@ void LMString::push_back(char ch)
 	_size++; //字符串的大小加一
 }
 
-LMString& LMString::operator+=(char ch)
+String& String::operator+=(char ch)
 {
 	push_back(ch); //尾插字符串
 	return *this; //返回左值（支持连续+=）
 }
 
-const char* LMString::c_str() const
+const char* String::c_str() const
 {
 	return _str;
 }
 
-LMString LMString::to_string(int value)
+String String::to_string(int value)
 {
 	bool flag = true;
 	if (value < 0)
@@ -127,7 +126,7 @@ LMString LMString::to_string(int value)
 		flag = false;
 		value = 0 - value;
 	}
-	LMString str;
+	String str;
 	while (value > 0)
 	{
 		int x = value % 10;
@@ -140,5 +139,16 @@ LMString LMString::to_string(int value)
 	}
 	std::reverse(str.begin(), str.end());
 	return str;
+}
+
+std::ostream& operator<<(std::ostream& os,const String& str)
+{
+	os << str.c_str();
+	return os;
+}
+std::ostream& operator<<(std::ostream& os, const String&& str)
+{
+	os << str.c_str();
+	return os;
 }
 
